@@ -11,6 +11,8 @@ export default function AdminPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'staff' });
   const [formError, setFormError] = useState('');
+  const [resetId, setResetId] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user?.role !== 'admin') {
@@ -64,6 +66,17 @@ export default function AdminPage() {
       body: JSON.stringify({ active: !currentlyActive }),
     });
     fetchUsers();
+  }
+
+  async function handleResetPassword(id) {
+    if (!newPassword || newPassword.length < 4) return;
+    await fetch(`/api/users/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: newPassword }),
+    });
+    setResetId(null);
+    setNewPassword('');
   }
 
   async function handleDelete(id, name) {
@@ -185,20 +198,47 @@ export default function AdminPage() {
                 </td>
                 <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                 <td>
-                  {user.id !== session.user.id && (
+                  {resetId === user.id ? (
+                    <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
+                      <input
+                        type="password"
+                        placeholder="New password"
+                        value={newPassword}
+                        onChange={e => setNewPassword(e.target.value)}
+                        style={{
+                          background: 'var(--bg)', border: '1px solid var(--border)',
+                          borderRadius: 4, padding: '4px 8px', color: 'var(--text)',
+                          fontSize: '0.8rem', width: 120,
+                        }}
+                        minLength={4}
+                      />
+                      <button className="action-btn" onClick={() => handleResetPassword(user.id)}>Save</button>
+                      <button className="action-btn" onClick={() => { setResetId(null); setNewPassword(''); }}>Cancel</button>
+                    </span>
+                  ) : (
                     <>
                       <button
                         className="action-btn"
-                        onClick={() => handleToggleActive(user.id, user.active)}
+                        onClick={() => setResetId(user.id)}
                       >
-                        {user.active ? 'Disable' : 'Enable'}
+                        Reset pw
                       </button>
-                      <button
-                        className="action-btn danger"
-                        onClick={() => handleDelete(user.id, user.name)}
-                      >
-                        Delete
-                      </button>
+                      {user.id !== session.user.id && (
+                        <>
+                          <button
+                            className="action-btn"
+                            onClick={() => handleToggleActive(user.id, user.active)}
+                          >
+                            {user.active ? 'Disable' : 'Enable'}
+                          </button>
+                          <button
+                            className="action-btn danger"
+                            onClick={() => handleDelete(user.id, user.name)}
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
                     </>
                   )}
                 </td>
