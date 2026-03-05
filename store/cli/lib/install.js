@@ -41,7 +41,7 @@ export async function installApp(app, sources) {
 }
 
 async function installElectron(app, source) {
-  const tag = `${app.id}-v${app.version}`;
+  const tag = (app.install.releaseTag || `${app.id}-v{version}`).replace('{version}', app.version);
   const asset = app.install.releaseAsset.replace('{version}', app.version);
   const url = releaseAssetUrl(source, tag, asset);
   const dest = path.join(process.env.HOME, 'Downloads', asset);

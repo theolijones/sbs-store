@@ -52,7 +52,7 @@ export default function StorePage() {
   function buildDownloadUrl(app) {
     const source = sources[app.sourceId];
     if (!source || app.install.method !== 'github-release') return null;
-    const tag = `${app.id}-v${app.version}`;
+    const tag = (app.install.releaseTag || `${app.id}-v{version}`).replace('{version}', app.version);
     const asset = app.install.releaseAsset.replace('{version}', app.version);
     return `https://github.com/${source.org}/${source.repo}/releases/download/${tag}/${asset}`;
   }
