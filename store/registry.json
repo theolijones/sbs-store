@@ -85,7 +85,8 @@
       "entrypoint": "package.json",
       "install": {
         "method": "github-release",
-        "releaseAsset": "bet-clipper-ts-{version}-mac.dmg"
+        "releaseTag": "v{version}",
+        "releaseAsset": "bet-clipper-ts-{version}-arm64.dmg"
       },
       "changelog": [
         { "version": "1.0.0", "date": "2026-03-05", "notes": "Initial release." }
