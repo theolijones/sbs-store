@@ -1,0 +1,77 @@
+name: Store Publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/**'
+      - 'services/**'
+
+permissions:
+  contents: write
+
+jobs:
+  update-registry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Detect changed apps
+        id: changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- apps/ services/ | \
+            sed -E 's|^(apps/[^/]+|services/[^/]+)/.*|\1|' | sort -u)
+          echo "dirs<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Update registry
+        run: |
+          APP_IDS=""
+          while IFS= read -r dir; do
+            [ -z "$dir" ] && continue
+
+            # Extract version from package.json or pyproject.toml
+            VERSION=""
+            if [ -f "$dir/package.json" ]; then
+              VERSION=$(node -e "console.log(require('./$dir/package.json').version)")
+            elif [ -f "$dir/pyproject.toml" ]; then
+              VERSION=$(grep -m1 '^version' "$dir/pyproject.toml" | sed 's/.*"\(.*\)".*/\1/')
+            fi
+
+            [ -z "$VERSION" ] && continue
+
+            # Derive app-id from directory name
+            APP_ID=$(basename "$dir")
+            APP_IDS="$APP_IDS $APP_ID"
+            TODAY=$(date -u +%Y-%m-%d)
+
+            # Update version and date in registry.json using node
+            node -e "
+              const fs = require('fs');
+              const reg = JSON.parse(fs.readFileSync('store/registry.json', 'utf-8'));
+              const app = reg.apps.find(a => a.id === '$APP_ID');
+              if (app) {
+                app.version = '$VERSION';
+                app.updated = '$TODAY';
+                reg.lastUpdated = '$TODAY';
+              }
+              fs.writeFileSync('store/registry.json', JSON.stringify(reg, null, 2) + '\n');
+            "
+          done <<< "${{ steps.changes.outputs.dirs }}"
+
+          echo "Updated apps:$APP_IDS"
+
+      - name: Commit registry changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add store/registry.json
+          git diff --cached --quiet && echo "No changes" && exit 0
+          CHANGED_IDS=$(git diff --cached store/registry.json | grep '"id"' | head -5 | sed 's/.*: "//;s/".*//' | tr '\n' ', ' | sed 's/,$//')
+          git commit -m "chore: update registry for ${CHANGED_IDS:-apps}"
+          git push

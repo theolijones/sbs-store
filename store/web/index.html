@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sportsbet Studio App Store</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface-hover: #222632;
+    --border: #2a2e3b;
+    --text: #e1e4eb;
+    --text-muted: #8b90a0;
+    --accent: #4f8ff7;
+    --purple: #9b6dff;
+    --green: #34d399;
+    --blue: #38bdf8;
+    --yellow: #fbbf24;
+    --red: #f87171;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 24px 0;
+    margin-bottom: 32px;
+  }
+
+  header h1 { font-size: 1.5rem; font-weight: 600; }
+  header p { color: var(--text-muted); font-size: 0.875rem; margin-top: 4px; }
+
+  .sources-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-bottom: 16px;
+  }
+  .sources-toggle:hover { border-color: var(--accent); color: var(--text); }
+
+  .sources-panel {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  .sources-panel.open { display: block; }
+  .sources-panel h3 { font-size: 0.9rem; margin-bottom: 12px; color: var(--text-muted); }
+  .source-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .source-row:last-child { border-bottom: none; }
+  .source-label { font-weight: 500; }
+  .source-repo { color: var(--text-muted); }
+  .source-count { color: var(--accent); }
+
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: var(--text);
+    font-size: 0.9rem;
+    outline: none;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-muted); }
+
+  .filter-group { display: flex; gap: 6px; }
+
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .source-filter {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    outline: none;
+    cursor: pointer;
+  }
+  .source-filter:focus { border-color: var(--accent); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    transition: border-color 0.15s;
+  }
+  .card:hover { border-color: var(--accent); }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .card-title { font-weight: 600; font-size: 1rem; }
+
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .badge-version { background: rgba(79,143,247,0.15); color: var(--accent); }
+  .badge-electron { background: rgba(155,109,255,0.15); color: var(--purple); }
+  .badge-node-service { background: rgba(52,211,153,0.15); color: var(--green); }
+  .badge-web { background: rgba(56,189,248,0.15); color: var(--blue); }
+  .badge-python-app { background: rgba(251,191,36,0.15); color: var(--yellow); }
+  .badge-source { background: rgba(251,191,36,0.12); color: var(--yellow); }
+
+  .card-desc { color: var(--text-muted); font-size: 0.85rem; margin: 10px 0; }
+
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .tag {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.04);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .card-footer { display: flex; justify-content: space-between; align-items: center; }
+  .card-date { font-size: 0.75rem; color: var(--text-muted); }
+
+  .install-btn {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .install-btn:hover { opacity: 0.85; }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    max-width: 500px;
+    width: 90%;
+  }
+  .modal h3 { margin-bottom: 16px; }
+  .modal-cmd {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 0.85rem;
+    color: var(--green);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+  .modal-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+  }
+  .modal-link:hover { text-decoration: underline; }
+  .modal-close {
+    margin-top: 16px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .modal-close:hover { color: var(--text); border-color: var(--accent); }
+
+  .loading { text-align: center; padding: 60px 0; color: var(--text-muted); }
+  .empty { text-align: center; padding: 40px 0; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>Sportsbet Studio App Store</h1>
+    <p>Discover, install, and manage studio apps across all sources.</p>
+  </div>
+</header>
+
+<main class="container">
+  <button class="sources-toggle" onclick="toggleSources()">Sources</button>
+  <div id="sources-panel" class="sources-panel"></div>
+
+  <div class="toolbar">
+    <input class="search-input" id="search" type="text" placeholder="Search apps by name or tag...">
+    <div class="filter-group" id="type-filters">
+      <button class="filter-btn active" data-type="all">All</button>
+      <button class="filter-btn" data-type="electron">Electron</button>
+      <button class="filter-btn" data-type="node-service">Service</button>
+      <button class="filter-btn" data-type="web">Web</button>
+      <button class="filter-btn" data-type="python-app">Python</button>
+    </div>
+    <select class="source-filter" id="source-filter">
+      <option value="all">All Sources</option>
+    </select>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="loading">Loading registry...</div>
+  </div>
+</main>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+const CONFIG = {
+  primaryRegistryUrl: 'https://raw.githubusercontent.com/theolijones/sbs-store/main/store/registry.json',
+  federated: true
+};
+
+let allApps = [];
+let sources = {};
+
+async function fetchRegistry() {
+  const res = await fetch(CONFIG.primaryRegistryUrl);
+  if (!res.ok) throw new Error(`Failed to fetch registry: ${res.status}`);
+  const primary = await res.json();
+
+  sources = primary.sources || {};
+  allApps = [...primary.apps];
+  const knownIds = new Set(allApps.map(a => a.id));
+
+  if (CONFIG.federated) {
+    for (const [sourceId, source] of Object.entries(sources)) {
+      if (!source.registryPath) continue;
+      const url = `https://raw.githubusercontent.com/${source.org}/${source.repo}/${source.branch}/${source.registryPath}`;
+      if (url === CONFIG.primaryRegistryUrl) continue;
+      try {
+        const r = await fetch(url);
+        if (!r.ok) continue;
+        const remote = await r.json();
+        for (const app of (remote.apps || [])) {
+          if (!knownIds.has(app.id)) {
+            allApps.push({ ...app, sourceId: app.sourceId || sourceId });
+            knownIds.add(app.id);
+          }
+        }
+      } catch {}
+    }
+  }
+}
+
+function buildSourceUrl(source, tag, asset) {
+  return `https://github.com/${source.org}/${source.repo}/releases/download/${tag}/${asset}`;
+}
+
+function renderSources() {
+  const panel = document.getElementById('sources-panel');
+  const select = document.getElementById('source-filter');
+
+  let html = '<h3>Configured Sources</h3>';
+  for (const [id, s] of Object.entries(sources)) {
+    const count = allApps.filter(a => a.sourceId === id).length;
+    html += `<div class="source-row">
+      <span><span class="source-label">${s.label}</span> <span class="source-repo">${s.org}/${s.repo}</span></span>
+      <span class="source-count">${count} app${count !== 1 ? 's' : ''}</span>
+    </div>`;
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = s.label;
+    select.appendChild(opt);
+  }
+  panel.innerHTML = html;
+}
+
+function renderCards(apps) {
+  const grid = document.getElementById('grid');
+  if (apps.length === 0) {
+    grid.innerHTML = '<div class="empty">No apps match your filters.</div>';
+    return;
+  }
+
+  grid.innerHTML = apps.map(app => {
+    const source = sources[app.sourceId];
+    const sourceLabel = source ? source.label : app.sourceId;
+    const typeBadgeClass = `badge-${app.type}`;
+    const tags = (app.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+
+    return `<div class="card">
+      <div class="card-header">
+        <span class="card-title">${app.name}</span>
+        <div class="badges">
+          <span class="badge badge-version">v${app.version}</span>
+          <span class="badge ${typeBadgeClass}">${app.type}</span>
+          <span class="badge badge-source">${sourceLabel}</span>
+        </div>
+      </div>
+      <div class="card-desc">${app.description}</div>
+      <div class="card-tags">${tags}</div>
+      <div class="card-footer">
+        <span class="card-date">Updated ${app.updated}</span>
+        <button class="install-btn" onclick="handleInstall('${app.id}')">Install</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function handleInstall(appId) {
+  const app = allApps.find(a => a.id === appId);
+  if (!app) return;
+
+  if (app.install.method === 'hosted') {
+    window.open(app.install.url, '_blank');
+    return;
+  }
+
+  const modal = document.getElementById('modal');
+  const overlay = document.getElementById('modal-overlay');
+
+  let content = `<h3>Install ${app.name}</h3>`;
+  content += `<div class="modal-cmd"><span>sbs install ${app.id}</span><button class="copy-btn" onclick="copyCmd('sbs install ${app.id}')">Copy</button></div>`;
+
+  if (app.install.method === 'github-release') {
+    const source = sources[app.sourceId];
+    if (source) {
+      const tag = `${app.id}-v${app.version}`;
+      const asset = app.install.releaseAsset.replace('{version}', app.version);
+      const url = buildSourceUrl(source, tag, asset);
+      content += `<p><a class="modal-link" href="${url}" target="_blank">Direct download: ${asset}</a></p>`;
+    }
+  }
+
+  content += `<button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('open')">Close</button>`;
+  modal.innerHTML = content;
+  overlay.classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.classList.remove('open');
+  }
+}
+
+function copyCmd(text) {
+  navigator.clipboard.writeText(text);
+}
+
+function toggleSources() {
+  document.getElementById('sources-panel').classList.toggle('open');
+}
+
+function applyFilters() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const activeType = document.querySelector('.filter-btn.active')?.dataset.type || 'all';
+  const sourceId = document.getElementById('source-filter').value;
+
+  const filtered = allApps.filter(app => {
+    if (activeType !== 'all' && app.type !== activeType) return false;
+    if (sourceId !== 'all' && app.sourceId !== sourceId) return false;
+    if (search) {
+      const haystack = `${app.name} ${app.description} ${(app.tags || []).join(' ')}`.toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
+    return true;
+  });
+
+  renderCards(filtered);
+}
+
+document.getElementById('search').addEventListener('input', applyFilters);
+document.getElementById('source-filter').addEventListener('change', applyFilters);
+document.getElementById('type-filters').addEventListener('click', (e) => {
+  if (!e.target.classList.contains('filter-btn')) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  applyFilters();
+});
+
+(async function init() {
+  try {
+    await fetchRegistry();
+    renderSources();
+    renderCards(allApps);
+  } catch (err) {
+    document.getElementById('grid').innerHTML = `<div class="empty">Failed to load registry: ${err.message}</div>`;
+  }
+})();
+</script>
+</body>
+</html>

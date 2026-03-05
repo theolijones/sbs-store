@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "1.1",
+  "storeVersion": "1.0.0",
+  "lastUpdated": "2026-03-05",
+  "sources": {
+    "sbs-store": {
+      "id": "sbs-store",
+      "label": "SBS Store",
+      "org": "theolijones",
+      "repo": "sbs-store",
+      "branch": "main",
+      "registryPath": "store/registry.json"
+    },
+    "video-viewer": {
+      "id": "video-viewer",
+      "label": "Video Viewer",
+      "org": "theolijones",
+      "repo": "video-viewer",
+      "branch": "main",
+      "registryPath": null
+    },
+    "bet-clipper-ts": {
+      "id": "bet-clipper-ts",
+      "label": "Bet Clipper",
+      "org": "theolijones",
+      "repo": "bet-clipper-ts",
+      "branch": "main",
+      "registryPath": null
+    },
+    "video-qa-app": {
+      "id": "video-qa-app",
+      "label": "Video QA",
+      "org": "theolijones",
+      "repo": "video-qa-app",
+      "branch": "main",
+      "registryPath": null
+    },
+    "metadata-exporter": {
+      "id": "metadata-exporter",
+      "label": "Metadata Exporter",
+      "org": "theolijones",
+      "repo": "metadata-exporter",
+      "branch": "main",
+      "registryPath": null
+    },
+    "racing-odds-updater": {
+      "id": "racing-odds-updater",
+      "label": "Racing Odds Updater",
+      "org": "theolijones",
+      "repo": "racing-odds-updater",
+      "branch": "main",
+      "registryPath": null
+    }
+  },
+  "apps": [
+    {
+      "id": "video-viewer",
+      "name": "Video Viewer",
+      "version": "1.0.0",
+      "description": "VideoHub - Electron video review and playout application.",
+      "type": "electron",
+      "sourceId": "video-viewer",
+      "path": ".",
+      "entrypoint": "package.json",
+      "install": {
+        "method": "github-release",
+        "releaseAsset": "video-viewer-{version}-mac.dmg"
+      },
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-03-05", "notes": "Initial release." }
+      ],
+      "tags": ["video", "review", "playout", "electron"],
+      "author": "Sportsbet Studio",
+      "updated": "2026-03-05"
+    },
+    {
+      "id": "bet-clipper-ts",
+      "name": "Bet Clipper",
+      "version": "1.0.0",
+      "description": "Electron application for bet clip assembly and management.",
+      "type": "electron",
+      "sourceId": "bet-clipper-ts",
+      "path": ".",
+      "entrypoint": "package.json",
+      "install": {
+        "method": "github-release",
+        "releaseAsset": "bet-clipper-ts-{version}-mac.dmg"
+      },
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-03-05", "notes": "Initial release." }
+      ],
+      "tags": ["clipper", "betting", "electron"],
+      "author": "Sportsbet Studio",
+      "updated": "2026-03-05"
+    },
+    {
+      "id": "video-qa-app",
+      "name": "Video QA",
+      "version": "0.1.0",
+      "description": "Browser-based video quality assurance and review tool powered by Next.js.",
+      "type": "web",
+      "sourceId": "video-qa-app",
+      "path": ".",
+      "entrypoint": "package.json",
+      "install": {
+        "method": "sparse-checkout",
+        "runAfter": ["npm install"],
+        "processManager": null
+      },
+      "changelog": [
+        { "version": "0.1.0", "date": "2026-03-05", "notes": "Initial release." }
+      ],
+      "tags": ["video", "qa", "review", "web"],
+      "author": "Sportsbet Studio",
+      "updated": "2026-03-05"
+    },
+    {
+      "id": "metadata-exporter",
+      "name": "Metadata Exporter",
+      "version": "1.0.0",
+      "description": "Monitors Google Sheets and exports JSON metadata sidecar files.",
+      "type": "python-app",
+      "sourceId": "metadata-exporter",
+      "path": ".",
+      "entrypoint": "main.py",
+      "install": {
+        "method": "sparse-checkout",
+        "runAfter": ["pip install -r requirements.txt"],
+        "processManager": null
+      },
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-03-05", "notes": "Initial release." }
+      ],
+      "tags": ["metadata", "google-sheets", "exporter"],
+      "author": "Sportsbet Studio",
+      "updated": "2026-03-05"
+    },
+    {
+      "id": "racing-odds-updater",
+      "name": "Racing Odds Updater",
+      "version": "1.0.0",
+      "description": "Python GUI app to fetch racing odds from Sportsbet API and update Google Sheets.",
+      "type": "python-app",
+      "sourceId": "racing-odds-updater",
+      "path": ".",
+      "entrypoint": "racing_odds_app.py",
+      "install": {
+        "method": "sparse-checkout",
+        "runAfter": ["pip install -r requirements.txt"],
+        "processManager": null
+      },
+      "changelog": [
+        { "version": "1.0.0", "date": "2026-03-05", "notes": "Initial release." }
+      ],
+      "tags": ["racing", "odds", "sportsbet", "google-sheets"],
+      "author": "Sportsbet Studio",
+      "updated": "2026-03-05"
+    }
+  ]
+}
