@@ -1,0 +1,25 @@
+{
+  "name": "sbs-store-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:push": "prisma db push",
+    "db:seed": "node prisma/seed.mjs",
+    "db:studio": "prisma studio",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "next-auth": "^4.24.0",
+    "@prisma/client": "^5.20.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "prisma": "^5.20.0"
+  }
+}
