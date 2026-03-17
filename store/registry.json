@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.1",
   "storeVersion": "1.0.0",
-  "lastUpdated": "2026-03-11",
+  "lastUpdated": "2026-03-17",
   "sources": {
     "sbs-store": {
       "id": "sbs-store",
@@ -56,7 +56,7 @@
     {
       "id": "video-viewer",
       "name": "Video Viewer",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "description": "VideoHub - Electron video review and playout application.",
       "type": "electron",
       "sourceId": "video-viewer",
@@ -68,12 +68,13 @@
         "releaseAsset": "VideoHub-{version}-arm64.dmg"
       },
       "changelog": [
+        { "version": "1.1.1", "date": "2026-03-17", "notes": "Configurable QA server URL for remote machines." },
         { "version": "1.1.0", "date": "2026-03-11", "notes": "Network deployment, pinned folders, Nomad metadata, deploy script." },
         { "version": "1.0.0", "date": "2026-03-05", "notes": "Initial release." }
       ],
       "tags": ["video", "review", "playout", "electron"],
       "author": "Sportsbet Studio",
-      "updated": "2026-03-11"
+      "updated": "2026-03-17"
     },
     {
       "id": "bet-clipper-ts",
